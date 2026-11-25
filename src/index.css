@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-optical-sizing: auto;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  .font-editorial {
+    font-family: 'EB Garamond', Georgia, Cambria, 'Times New Roman', serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    letter-spacing: -0.012em;
+  }
+  .font-display {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    letter-spacing: -0.015em;
+  }
+  .font-sans-ui {
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  .font-hebrew {
+    font-family: 'Noto Serif Hebrew', Georgia, serif;
+  }
+  .font-greek {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+  .font-scripture-multilang {
+    font-family: 'EB Garamond', 'Noto Serif Tamil', 'Noto Serif Malayalam', 'Noto Serif Devanagari', 'Noto Serif Telugu', 'Noto Serif Kannada', 'Noto Serif Bengali', 'Noto Serif Hebrew', 'Noto Naskh Arabic', Georgia, serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+    line-height: 1.72;
+  }
+  .font-code {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #92400e;
+  outline-offset: 2px;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-shadow-none {
+    box-shadow: none !important;
+  }
+}

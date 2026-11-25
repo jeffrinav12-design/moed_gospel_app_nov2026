@@ -1,0 +1,6 @@
+{
+  "name": "MOED",
+  "description": "MOED — Gospel Study, Prayer Fellowship & Jesus Never Fails YouTube Ministry Suite.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

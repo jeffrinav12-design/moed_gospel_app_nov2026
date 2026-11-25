@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "PartnerProfile": {
+      "title": "PartnerProfile",
+      "description": "Private profile and Gospel Partner preferences for a signed-in user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "email": { "type": "string", "maxLength": 160 },
+        "role": { "type": "string", "enum": ["believer", "pastor"] },
+        "pillar": { "type": "string", "maxLength": 64 },
+        "avatar": { "type": "string", "maxLength": 16 },
+        "devotionMinutes": { "type": "number" },
+        "preferredBibleLanguage": { "type": "string", "maxLength": 16 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "role", "pillar"]
+    },
+    "TopicProgress": {
+      "title": "TopicProgress",
+      "description": "Real study completion and quiz accuracy for a Gospel topic per partner.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "sessionId": { "type": "string", "maxLength": 128 },
+        "quizDone": { "type": "boolean" },
+        "quizScore": { "type": "number" },
+        "arDone": { "type": "boolean" },
+        "cbqDone": { "type": "boolean" },
+        "giveReasonDone": { "type": "boolean" },
+        "diffDone": { "type": "boolean" },
+        "subjectiveDone": { "type": "boolean" },
+        "flashcardsMastered": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "sessionId"]
+    },
+    "CustomBiblicalCard": {
+      "title": "CustomBiblicalCard",
+      "description": "Editable Biblical Study Card, Flashcard, or Sermon Template created or customized by the partner.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "cardId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "reference": { "type": "string", "maxLength": 120 },
+        "hebrewOrGreekTerm": { "type": "string", "maxLength": 160 },
+        "frontPrompt": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "backTruth": { "type": "string", "minLength": 1, "maxLength": 1500 },
+        "historicalNote": { "type": "string", "maxLength": 1000 },
+        "templateStyle": { "type": "string", "enum": ["classic-alabaster", "torah-scroll", "sanctuary-rose", "lapis-scripture"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "cardId", "title", "frontPrompt", "backTruth", "templateStyle"]
+    },
+    "PrayerRequest": {
+      "title": "PrayerRequest",
+      "description": "Live fellowship prayer request or praise testimony posted by a Gospel Partner.",
+      "type": "object",
+      "properties": {
+        "authorUid": { "type": "string", "maxLength": 128 },
+        "authorName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "message": { "type": "string", "minLength": 2, "maxLength": 1000 },
+        "topicTitle": { "type": "string", "maxLength": 180 },
+        "amenCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["authorUid", "authorName", "message", "amenCount", "createdAt"]
+    },
+    "FellowshipGroupEntity": {
+      "title": "FellowshipGroupEntity",
+      "description": "Gospel Partner fellowship circle with schedule and live meeting link.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "pillar": { "type": "string", "maxLength": 64 },
+        "focusScripture": { "type": "string", "maxLength": 160 },
+        "memberCount": { "type": "number" },
+        "meetingLink": { "type": "string", "maxLength": 256 },
+        "currentSessionId": { "type": "string", "maxLength": 128 },
+        "scheduleTime": { "type": "string", "maxLength": 80 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "name", "pillar", "focusScripture", "meetingLink", "createdAt"]
+    },
+    "BookRelease": {
+      "title": "BookRelease",
+      "description": "Gospel book publication showcase entry (upcoming or released) for Jesus Never Fails Ministry.",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string", "maxLength": 128 },
+        "ownerUid": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "subtitle": { "type": "string", "maxLength": 200 },
+        "authorName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "scriptureFocus": { "type": "string", "maxLength": 140 },
+        "description": { "type": "string", "minLength": 5, "maxLength": 1500 },
+        "releaseStatus": { "type": "string", "enum": ["upcoming", "released"] },
+        "releaseDateLabel": { "type": "string", "maxLength": 80 },
+        "purchaseOrReadUrl": { "type": "string", "maxLength": 500 },
+        "youtubeTrailerUrl": { "type": "string", "maxLength": 500 },
+        "coverStyle": { "type": "string", "enum": ["classic-alabaster", "torah-scroll", "sanctuary-rose", "lapis-scripture"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["bookId", "ownerUid", "title", "authorName", "description", "releaseStatus", "coverStyle", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/partners/{userId}": {
+      "schema": { "$ref": "#/entities/PartnerProfile" },
+      "description": "Owner-only Gospel Partner profile storing display preferences and email."
+    },
+    "/partners/{userId}/progress/{sessionId}": {
+      "schema": { "$ref": "#/entities/TopicProgress" },
+      "description": "Real-time Gospel topic completion and quiz score progress for the partner."
+    },
+    "/partners/{userId}/customCards/{cardId}": {
+      "schema": { "$ref": "#/entities/CustomBiblicalCard" },
+      "description": "Owner-only editable Biblical cards, flashcards, and study templates."
+    },
+    "/prayerRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/PrayerRequest" },
+      "description": "Live prayer and praise requests shared across Gospel Partners."
+    },
+    "/fellowships/{fellowshipId}": {
+      "schema": { "$ref": "#/entities/FellowshipGroupEntity" },
+      "description": "Live Gospel Fellowship groups created by partners."
+    },
+    "/bookReleases/{bookId}": {
+      "schema": { "$ref": "#/entities/BookRelease" },
+      "description": "Published or upcoming ministry books showcased on Jesus Never Fails."
+    }
+  }
+}

@@ -1,0 +1,222 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Hardened Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email == 'jeffrinav12@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 3. Entity Validation Blueprints
+    function isValidPartnerProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'role', 'pillar']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'email', 'role', 'pillar', 'avatar', 'devotionMinutes', 'preferredBibleLanguage', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+        data.uid == request.auth.uid &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+        (!('email' in data) || (data.email is string && data.email.size() <= 160)) &&
+        data.role in ['believer', 'pastor'] &&
+        data.pillar is string && data.pillar.size() >= 1 && data.pillar.size() <= 64 &&
+        (!('avatar' in data) || (data.avatar is string && data.avatar.size() <= 16)) &&
+        (!('devotionMinutes' in data) || (data.devotionMinutes is number && data.devotionMinutes >= 0 && data.devotionMinutes <= 100000)) &&
+        (!('preferredBibleLanguage' in data) || (data.preferredBibleLanguage is string && data.preferredBibleLanguage.size() <= 16)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidTopicProgress(data) {
+      return data.keys().hasAll(['uid', 'sessionId']) &&
+        data.keys().hasOnly(['uid', 'sessionId', 'quizDone', 'quizScore', 'arDone', 'cbqDone', 'giveReasonDone', 'diffDone', 'subjectiveDone', 'flashcardsMastered', 'updatedAt']) &&
+        data.uid is string && data.uid == request.auth.uid && data.uid.size() <= 128 &&
+        data.sessionId is string && isValidId(data.sessionId) &&
+        (!('quizDone' in data) || data.quizDone is bool) &&
+        (!('quizScore' in data) || (data.quizScore is number && data.quizScore >= 0 && data.quizScore <= 100000)) &&
+        (!('arDone' in data) || data.arDone is bool) &&
+        (!('cbqDone' in data) || data.cbqDone is bool) &&
+        (!('giveReasonDone' in data) || data.giveReasonDone is bool) &&
+        (!('diffDone' in data) || data.diffDone is bool) &&
+        (!('subjectiveDone' in data) || data.subjectiveDone is bool) &&
+        (!('flashcardsMastered' in data) || (data.flashcardsMastered is number && data.flashcardsMastered >= 0 && data.flashcardsMastered <= 500)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidCustomCard(data) {
+      return data.keys().hasAll(['uid', 'cardId', 'title', 'frontPrompt', 'backTruth', 'templateStyle']) &&
+        data.keys().hasOnly(['uid', 'cardId', 'title', 'reference', 'hebrewOrGreekTerm', 'frontPrompt', 'backTruth', 'historicalNote', 'templateStyle', 'updatedAt']) &&
+        data.uid is string && data.uid == request.auth.uid && data.uid.size() <= 128 &&
+        data.cardId is string && isValidId(data.cardId) &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 140 &&
+        (!('reference' in data) || (data.reference is string && data.reference.size() <= 120)) &&
+        (!('hebrewOrGreekTerm' in data) || (data.hebrewOrGreekTerm is string && data.hebrewOrGreekTerm.size() <= 160)) &&
+        data.frontPrompt is string && data.frontPrompt.size() >= 1 && data.frontPrompt.size() <= 600 &&
+        data.backTruth is string && data.backTruth.size() >= 1 && data.backTruth.size() <= 1500 &&
+        (!('historicalNote' in data) || (data.historicalNote is string && data.historicalNote.size() <= 1000)) &&
+        data.templateStyle in ['classic-alabaster', 'torah-scroll', 'sanctuary-rose', 'lapis-scripture'] &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidPrayerRequest(data) {
+      return data.keys().hasAll(['authorUid', 'authorName', 'message', 'amenCount', 'createdAt']) &&
+        data.keys().hasOnly(['authorUid', 'authorName', 'message', 'topicTitle', 'amenCount', 'createdAt']) &&
+        data.authorUid is string && data.authorUid.size() >= 1 && data.authorUid.size() <= 128 &&
+        data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 80 &&
+        data.message is string && data.message.size() >= 2 && data.message.size() <= 1000 &&
+        (!('topicTitle' in data) || (data.topicTitle is string && data.topicTitle.size() <= 180)) &&
+        data.amenCount is number && data.amenCount >= 0 && data.amenCount <= 1000000 &&
+        data.createdAt is string && data.createdAt.size() >= 4 && data.createdAt.size() <= 64;
+    }
+
+    function isValidFellowship(data) {
+      return data.keys().hasAll(['ownerUid', 'name', 'pillar', 'focusScripture', 'meetingLink', 'createdAt']) &&
+        data.keys().hasOnly(['ownerUid', 'name', 'pillar', 'focusScripture', 'memberCount', 'meetingLink', 'currentSessionId', 'scheduleTime', 'createdAt']) &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 120 &&
+        data.pillar is string && data.pillar.size() >= 1 && data.pillar.size() <= 64 &&
+        data.focusScripture is string && data.focusScripture.size() >= 1 && data.focusScripture.size() <= 160 &&
+        (!('memberCount' in data) || (data.memberCount is number && data.memberCount >= 1 && data.memberCount <= 100000)) &&
+        data.meetingLink is string && data.meetingLink.size() >= 5 && data.meetingLink.size() <= 256 &&
+        (!('currentSessionId' in data) || (data.currentSessionId is string && data.currentSessionId.size() <= 128)) &&
+        (!('scheduleTime' in data) || (data.scheduleTime is string && data.scheduleTime.size() <= 80)) &&
+        data.createdAt is string && data.createdAt.size() >= 4 && data.createdAt.size() <= 64;
+    }
+
+    // 4. Connectivity Verification Document (Public Health Read)
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // 5. Private Owner-Only Partner Profile, Progress & Custom Biblical Cards
+    match /partners/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow create: if isValidId(userId) && isOwner(userId) && isValidPartnerProfile(incoming());
+      allow update: if isValidId(userId) && isOwner(userId) && isValidPartnerProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'role', 'pillar', 'avatar', 'devotionMinutes', 'preferredBibleLanguage', 'updatedAt']);
+
+      match /progress/{sessionId} {
+        allow get: if isValidId(userId) && isValidId(sessionId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isValidId(userId) && isValidId(sessionId) && isOwner(userId) &&
+          incoming().sessionId == sessionId &&
+          isValidTopicProgress(incoming());
+        allow update: if isValidId(userId) && isValidId(sessionId) && isOwner(userId) &&
+          isValidTopicProgress(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().sessionId == existing().sessionId &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['quizDone', 'quizScore', 'arDone', 'cbqDone', 'giveReasonDone', 'diffDone', 'subjectiveDone', 'flashcardsMastered', 'updatedAt']);
+      }
+
+      match /customCards/{cardId} {
+        allow get: if isValidId(userId) && isValidId(cardId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isValidId(userId) && isValidId(cardId) && isOwner(userId) &&
+          incoming().cardId == cardId &&
+          isValidCustomCard(incoming());
+        allow update: if isValidId(userId) && isValidId(cardId) && isOwner(userId) &&
+          isValidCustomCard(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().cardId == existing().cardId &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['title', 'reference', 'hebrewOrGreekTerm', 'frontPrompt', 'backTruth', 'historicalNote', 'templateStyle', 'updatedAt']);
+        allow delete: if isValidId(userId) && isValidId(cardId) && isOwner(userId);
+      }
+    }
+
+    // 6. Live Shared Gospel Partner Prayer Requests
+    match /prayerRequests/{requestId} {
+      allow get: if isValidId(requestId) && isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isValidId(requestId) && isSignedIn() &&
+        incoming().authorUid == request.auth.uid &&
+        incoming().amenCount == 0 &&
+        isValidPrayerRequest(incoming());
+      allow update: if isValidId(requestId) && isSignedIn() && isValidPrayerRequest(incoming()) &&
+        incoming().authorUid == existing().authorUid &&
+        incoming().createdAt == existing().createdAt &&
+        (
+          (existing().authorUid == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['message', 'topicTitle', 'authorName'])) ||
+          (incoming().diff(existing()).affectedKeys().hasOnly(['amenCount']) && incoming().amenCount == existing().amenCount + 1)
+        );
+      allow delete: if isValidId(requestId) && isSignedIn() && existing().authorUid == request.auth.uid;
+    }
+
+    // 7. Live Gospel Fellowship Circles
+    match /fellowships/{fellowshipId} {
+      allow get: if isValidId(fellowshipId) && isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isValidId(fellowshipId) && isSignedIn() &&
+        incoming().ownerUid == request.auth.uid &&
+        isValidFellowship(incoming());
+      allow update: if isValidId(fellowshipId) && isSignedIn() && isValidFellowship(incoming()) &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        (
+          (existing().ownerUid == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'pillar', 'focusScripture', 'memberCount', 'meetingLink', 'currentSessionId', 'scheduleTime'])) ||
+          (incoming().diff(existing()).affectedKeys().hasOnly(['memberCount']) && incoming().memberCount == existing().memberCount + 1)
+        );
+      allow delete: if isValidId(fellowshipId) && isSignedIn() && existing().ownerUid == request.auth.uid;
+    }
+
+    function isValidBookRelease(data) {
+      return data.keys().hasAll(['bookId', 'ownerUid', 'title', 'authorName', 'description', 'releaseStatus', 'coverStyle', 'createdAt']) &&
+        data.keys().hasOnly(['bookId', 'ownerUid', 'title', 'subtitle', 'authorName', 'scriptureFocus', 'description', 'releaseStatus', 'releaseDateLabel', 'purchaseOrReadUrl', 'youtubeTrailerUrl', 'coverStyle', 'createdAt', 'updatedAt']) &&
+        data.bookId is string && isValidId(data.bookId) &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.title is string && data.title.size() >= 2 && data.title.size() <= 160 &&
+        (!('subtitle' in data) || (data.subtitle is string && data.subtitle.size() <= 200)) &&
+        data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 100 &&
+        (!('scriptureFocus' in data) || (data.scriptureFocus is string && data.scriptureFocus.size() <= 140)) &&
+        data.description is string && data.description.size() >= 5 && data.description.size() <= 1500 &&
+        data.releaseStatus in ['upcoming', 'released'] &&
+        (!('releaseDateLabel' in data) || (data.releaseDateLabel is string && data.releaseDateLabel.size() <= 80)) &&
+        (!('purchaseOrReadUrl' in data) || (data.purchaseOrReadUrl is string && data.purchaseOrReadUrl.size() <= 500)) &&
+        (!('youtubeTrailerUrl' in data) || (data.youtubeTrailerUrl is string && data.youtubeTrailerUrl.size() <= 500)) &&
+        data.coverStyle in ['classic-alabaster', 'torah-scroll', 'sanctuary-rose', 'lapis-scripture'] &&
+        data.createdAt is string && data.createdAt.size() >= 4 && data.createdAt.size() <= 64 &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    // 8. Gospel Book Releases Showcase (Public catalog read, verified creator/owner write)
+    match /bookReleases/{bookId} {
+      allow get: if isValidId(bookId);
+      allow list: if resource.data.releaseStatus in ['upcoming', 'released'];
+      allow create: if isValidId(bookId) && isSignedIn() &&
+        incoming().bookId == bookId &&
+        incoming().ownerUid == request.auth.uid &&
+        isValidBookRelease(incoming());
+      allow update: if isValidId(bookId) && isSignedIn() &&
+        isValidBookRelease(incoming()) &&
+        incoming().bookId == existing().bookId &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        (existing().ownerUid == request.auth.uid || isAdmin()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'subtitle', 'authorName', 'scriptureFocus', 'description', 'releaseStatus', 'releaseDateLabel', 'purchaseOrReadUrl', 'youtubeTrailerUrl', 'coverStyle', 'updatedAt']);
+      allow delete: if isValidId(bookId) && isSignedIn() &&
+        (existing().ownerUid == request.auth.uid || isAdmin());
+    }
+  }
+}
