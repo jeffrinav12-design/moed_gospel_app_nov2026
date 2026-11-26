@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { RabbiHistoryLesson } from '../types';
 import { RABBI_HISTORY_LESSONS } from '../data/languagesAndHistoryData';
+import { safeFetchJson } from '../services/apiClient';
 
 interface RabbiHistoryPageProps {
   onOpenBibleReader?: () => void;
@@ -36,17 +37,17 @@ export const RabbiHistoryPage: React.FC<RabbiHistoryPageProps> = ({
     setLoadingRabbi(true);
     setRabbiError(null);
     try {
-      const res = await fetch('/api/bible/rabbi-history', {
+      const result = await safeFetchJson<RabbiHistoryLesson>('/api/bible/rabbi-history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ queryText: rabbiQuery.trim() }),
       });
-      const data = await res.json();
-      if (!res.ok || !data?.title) {
-        throw new Error(data?.error || 'Could not retrieve Jewish historical insight.');
+      if (!result.ok || !result.data?.title) {
+        throw new Error(result.error || 'Could not retrieve Jewish historical insight.');
       }
-      setLessons((prev) => [data, ...prev]);
-      setActiveLessonId(data.id);
+      const lesson = result.data;
+      setLessons((prev) => [lesson, ...prev]);
+      setActiveLessonId(lesson.id);
       setRabbiQuery('');
     } catch (err: any) {
       setRabbiError(err?.message || 'Unable to generate historical commentary right now.');

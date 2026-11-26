@@ -13,6 +13,7 @@ import {
   JESUS_NEVER_FAILS_CHANNEL_URL,
   buildChannelVideoSearchUrl,
 } from '../data/gospelData';
+import { safeFetchJson } from '../services/apiClient';
 
 interface LiveClassChatProps {
   userProfile: UserProfile;
@@ -87,7 +88,7 @@ export const LiveClassChat: React.FC<LiveClassChatProps> = ({
 
     setIsAskingGuide(true);
     try {
-      const response = await fetch('/api/ai-tutor-chat', {
+      const result = await safeFetchJson<{ reply?: string; timestamp?: string }>('/api/ai-tutor-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -99,24 +100,26 @@ export const LiveClassChat: React.FC<LiveClassChatProps> = ({
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const guideMsg: ChatMessage = {
-          id: `msg-guide-${Date.now()}`,
-          sender: 'MOED Gospel Guide',
-          role: 'gospel-guide',
-          text: data.reply,
-          timestamp:
-            data.timestamp ||
-            new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
+      const replyText =
+        result.ok && result.data?.reply
+          ? result.data.reply
+          : `Reflect on "${topicTitle}" (${scriptureBook}): "Jesus Christ is the same yesterday, today, and forever" (Hebrews 13:8). You can also open the Holy Bible Reader or watch @jesusneverfails7649 teachings for deeper study.`;
 
-        setThreads((prev) =>
-          prev.map((t) =>
-            t.id === activeThreadId ? { ...t, messages: [...t.messages, guideMsg] } : t
-          )
-        );
-      }
+      const guideMsg: ChatMessage = {
+        id: `msg-guide-${Date.now()}`,
+        sender: 'MOED Gospel Guide',
+        role: 'gospel-guide',
+        text: replyText,
+        timestamp:
+          (result.ok && result.data?.timestamp) ||
+          new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      setThreads((prev) =>
+        prev.map((t) =>
+          t.id === activeThreadId ? { ...t, messages: [...t.messages, guideMsg] } : t
+        )
+      );
     } catch (err) {
       console.error(err);
     } finally {

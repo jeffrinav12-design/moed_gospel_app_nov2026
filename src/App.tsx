@@ -22,6 +22,7 @@ import {
 } from './types';
 import { INITIAL_SESSIONS, INITIAL_BATCHES } from './data/defaultSessions';
 import { buildChannelVideoSearchUrl } from './data/gospelData';
+import { safeFetchJson } from './services/apiClient';
 import {
   JESUS_NEVER_FAILS_HANDLE,
   MINISTRY_SOCIAL_LINKS,
@@ -201,10 +202,9 @@ export default function App() {
     setLoadingVideos(true);
     try {
       const url = forceRefresh ? '/api/youtube/videos?refresh=true' : '/api/youtube/videos';
-      const res = await fetch(url);
-      const data = await res.json();
-      if (Array.isArray(data?.videos)) {
-        setLiveVideos(data.videos);
+      const result = await safeFetchJson<{ videos?: LiveYouTubeVideo[] }>(url);
+      if (result.ok && Array.isArray(result.data?.videos)) {
+        setLiveVideos(result.data.videos);
       }
     } catch (err) {
       console.warn('Could not fetch live YouTube videos:', err);
@@ -237,10 +237,10 @@ export default function App() {
       }
     }
 
-    fetch('/api/sessions')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+    safeFetchJson<GospelSession[]>('/api/sessions')
+      .then((result) => {
+        const data = result.data;
+        if (result.ok && Array.isArray(data) && data.length > 0) {
           setSessions((prev) => {
             const map = new Map<string, GospelSession>();
             prev.forEach((s) => map.set(s.id, s));
@@ -253,10 +253,10 @@ export default function App() {
       })
       .catch(() => {});
 
-    fetch('/api/fellowships')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+    safeFetchJson<FellowshipGroup[]>('/api/fellowships')
+      .then((result) => {
+        const data = result.data;
+        if (result.ok && Array.isArray(data) && data.length > 0) {
           setFellowships((prev) => {
             const map = new Map<string, FellowshipGroup>();
             prev.forEach((f) => map.set(f.id, f));
@@ -269,10 +269,10 @@ export default function App() {
       })
       .catch(() => {});
 
-    fetch('/api/custom-templates')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+    safeFetchJson<CustomBiblicalCard[]>('/api/custom-templates')
+      .then((result) => {
+        const data = result.data;
+        if (result.ok && Array.isArray(data) && data.length > 0) {
           setCustomCards((prev) => {
             const map = new Map<string, CustomBiblicalCard>();
             prev.forEach((c) => map.set(c.cardId, c));
@@ -285,10 +285,10 @@ export default function App() {
       })
       .catch(() => {});
 
-    fetch('/api/book-releases')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+    safeFetchJson<BookReleaseItem[]>('/api/book-releases')
+      .then((result) => {
+        const data = result.data;
+        if (result.ok && Array.isArray(data) && data.length > 0) {
           setBookReleases((prev) => {
             const map = new Map<string, BookReleaseItem>();
             prev.forEach((b) => map.set(b.bookId, b));
@@ -625,7 +625,7 @@ export default function App() {
     setIsGeneratingFromVideo(video.videoId);
     setStatusBannerError(null);
     try {
-      const res = await fetch('/api/generate-gospel-module', {
+      const result = await safeFetchJson<{ session?: GospelSession }>('/api/generate-gospel-module', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -639,12 +639,12 @@ export default function App() {
           sourceVideoUrl: video.url,
         }),
       });
-      const data = await res.json();
-      if (!res.ok || !data?.session) {
-        throw new Error(data?.error || 'Could not generate Gospel study from video.');
+      if (!result.ok || !result.data?.session) {
+        throw new Error(result.error || 'Could not generate Gospel study from video.');
       }
-      setSessions((prev) => [data.session, ...prev]);
-      setCurrentSessionId(data.session.id);
+      const createdSession = result.data.session;
+      setSessions((prev) => [createdSession, ...prev]);
+      setCurrentSessionId(createdSession.id);
       navigateToPage('kahoot');
     } catch (err: any) {
       setStatusBannerError(

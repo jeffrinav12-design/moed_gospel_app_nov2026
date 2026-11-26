@@ -27,6 +27,7 @@ import {
   STORY_CATEGORIES,
 } from '../data/languagesAndHistoryData';
 import { DEFAULT_BIBLICAL_CARDS } from '../data/ministryLinks';
+import { safeFetchJson } from '../services/apiClient';
 
 type StoriesCardsMode = 'stories' | 'cards' | 'editor';
 
@@ -160,17 +161,17 @@ export const BibleStoriesAndCardsHub: React.FC<BibleStoriesAndCardsHubProps> = (
     setLookingUpPerson(true);
     setLookupError(null);
     try {
-      const res = await fetch('/api/bible/character-story', {
+      const result = await safeFetchJson<BibleCharacterStory>('/api/bible/character-story', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ personName: lookupName.trim() }),
       });
-      const data = await res.json();
-      if (!res.ok || !data?.name) {
-        throw new Error(data?.error || 'Could not retrieve story for that person.');
+      if (!result.ok || !result.data?.name) {
+        throw new Error(result.error || 'Could not retrieve story for that person.');
       }
-      setStories((prev) => [data, ...prev]);
-      setSelectedStoryId(data.id);
+      const story = result.data;
+      setStories((prev) => [story, ...prev]);
+      setSelectedStoryId(story.id);
       setStoryCategory('All');
       setLookupName('');
     } catch (err: any) {

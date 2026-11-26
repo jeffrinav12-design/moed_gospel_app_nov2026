@@ -20,6 +20,7 @@ import {
   JESUS_NEVER_FAILS_CHANNEL_URL,
   buildChannelVideoSearchUrl,
 } from '../data/gospelData';
+import { safeFetchJson } from '../services/apiClient';
 
 interface AIPrototypeStudioProps {
   currentPillar: GospelPillar;
@@ -128,33 +129,32 @@ export const AIPrototypeStudio: React.FC<AIPrototypeStudioProps> = ({
 
       setGenerationStep('Creating Gospel quiz, Assertion & Reason, Parable Studies, and Jesus Never Fail Ministries YouTube links...');
 
-      const response = await fetch('/api/generate-gospel-module', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic: topic.trim(),
-          pillar,
-          scriptureBook: scriptureBook.trim(),
-          fellowshipName: `Jesus Never Fail Ministries · ${pillar}`,
-          prompt: fellowshipPrompt.trim(),
-          documentText: documentText.trim(),
-          imageBase64,
-          imageMimeType,
-        }),
-      });
+      const result = await safeFetchJson<{ session?: GospelSession }>(
+        '/api/generate-gospel-module',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic: topic.trim(),
+            pillar,
+            scriptureBook: scriptureBook.trim(),
+            fellowshipName: `Jesus Never Fail Ministries · ${pillar}`,
+            prompt: fellowshipPrompt.trim(),
+            documentText: documentText.trim(),
+            imageBase64,
+            imageMimeType,
+          }),
+        }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to build Gospel study module');
+      if (!result.ok || !result.data?.session) {
+        throw new Error(result.error || 'Failed to build Gospel study module');
       }
 
       setGenerationStep('Finalizing memory verses, prayer points & fellowship share link...');
-      const data = await response.json();
-
-      if (data.session) {
-        setLatestCreatedSession(data.session);
-        onSessionCreated(data.session);
-      }
+      const generatedSession = result.data.session;
+      setLatestCreatedSession(generatedSession);
+      onSessionCreated(generatedSession);
     } catch (err: any) {
       console.error(err);
       setErrorMessage(err.message || 'Could not generate Gospel study module. Please check inputs.');

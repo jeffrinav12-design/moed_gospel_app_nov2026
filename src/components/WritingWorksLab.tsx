@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { PracticeExercise, WritingCheckResult } from '../types';
 import { buildChannelVideoSearchUrl } from '../data/gospelData';
+import { safeFetchJson } from '../services/apiClient';
 
 interface WritingWorksLabProps {
   exercises: PracticeExercise[];
@@ -45,7 +46,7 @@ export const WritingWorksLab: React.FC<WritingWorksLabProps> = ({
     setEvaluatingId(exercise.id);
 
     try {
-      const response = await fetch('/api/check-writing-answer', {
+      const result = await safeFetchJson<WritingCheckResult>('/api/check-writing-answer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,15 +58,14 @@ export const WritingWorksLab: React.FC<WritingWorksLabProps> = ({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Pastoral reflection review failed');
+      if (!result.ok || !result.data) {
+        throw new Error(result.error || 'Pastoral reflection review unavailable right now.');
       }
 
-      const result: WritingCheckResult = await response.json();
-      setEvaluations((prev) => ({ ...prev, [exercise.id]: result }));
-    } catch (err) {
+      setEvaluations((prev) => ({ ...prev, [exercise.id]: result.data! }));
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Could not review your prayer reflection right now. Please try again.');
+      setErrorMessage(err?.message || 'Could not review your prayer reflection right now. Please try again.');
     } finally {
       setEvaluatingId(null);
     }

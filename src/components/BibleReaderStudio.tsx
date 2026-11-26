@@ -25,6 +25,7 @@ import {
 } from '../types';
 import { BIBLE_BOOKS_CATALOG, BIBLE_LANGUAGES } from '../data/bibleCatalog';
 import { buildChannelVideoSearchUrl } from '../data/gospelData';
+import { fetchBibleChapterResilient, analyzeVerseResilient } from '../services/clientBibleService';
 
 interface BibleReaderStudioProps {
   userName?: string;
@@ -100,13 +101,13 @@ export const BibleReaderStudio: React.FC<BibleReaderStudioProps> = ({
       const bookNumber = idx >= 0 ? idx + 1 : 19;
 
       try {
-        const res = await fetch(
-          `/api/bible/chapter?book=${encodeURIComponent(bookName)}&bookNumber=${bookNumber}&chapter=${chapterNum}&lang=${encodeURIComponent(langCode)}&parallel=${parallel ? 'true' : 'false'}`
+        const data = await fetchBibleChapterResilient(
+          bookName,
+          bookNumber,
+          chapterNum,
+          langCode,
+          parallel
         );
-        const data = await res.json();
-        if (!res.ok || !Array.isArray(data?.verses)) {
-          throw new Error(data?.error || `Could not load ${bookName} ${chapterNum}`);
-        }
         setChapterData(data);
       } catch (err: any) {
         setChapterError(err?.message || 'Could not load Bible chapter right now.');
@@ -145,19 +146,11 @@ export const BibleReaderStudio: React.FC<BibleReaderStudioProps> = ({
     setVerseAnalysis(null);
     try {
       const ref = `${verse.book_name || selectedBook.name} ${verse.chapter}:${verse.verse}`;
-      const res = await fetch('/api/bible/hebrew-meaning', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reference: ref,
-          verseText: verse.englishText || verse.text,
-          testament: selectedBook.testament,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !Array.isArray(data?.keyWords)) {
-        throw new Error(data?.error || 'Could not retrieve Hebrew/Greek meanings.');
-      }
+      const data = await analyzeVerseResilient(
+        ref,
+        verse.englishText || verse.text,
+        selectedBook.testament
+      );
       setVerseAnalysis(data);
     } catch (err: any) {
       setAnalysisError(err?.message || 'Unable to analyze verse roots right now.');

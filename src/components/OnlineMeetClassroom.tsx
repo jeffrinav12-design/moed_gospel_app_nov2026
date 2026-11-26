@@ -30,6 +30,7 @@ import {
 } from '../types';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { fetchGmailClassEmails, GmailMessageSummary } from '../services/googleAuth';
+import { safeFetchJson } from '../services/apiClient';
 import {
   auth,
   subscribePrayerRequests,
@@ -96,12 +97,9 @@ export const OnlineMeetClassroom: React.FC<OnlineMeetClassroomProps> = ({
 
     async function loadServerPrayers() {
       try {
-        const res = await fetch('/api/prayer-requests');
-        if (res.ok) {
-          const data = await res.json();
-          if (isMounted && Array.isArray(data)) {
-            setPrayerRequests(data);
-          }
+        const result = await safeFetchJson<PrayerRequestItem[]>('/api/prayer-requests');
+        if (result.ok && isMounted && Array.isArray(result.data)) {
+          setPrayerRequests(result.data);
         }
       } catch {
         // Ignore network errors
@@ -291,7 +289,7 @@ export const OnlineMeetClassroom: React.FC<OnlineMeetClassroomProps> = ({
       if (auth.currentUser) {
         await postPrayerRequest(authorName, text, currentSession.title);
       } else {
-        const res = await fetch('/api/prayer-requests', {
+        const result = await safeFetchJson<PrayerRequestItem>('/api/prayer-requests', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -300,8 +298,18 @@ export const OnlineMeetClassroom: React.FC<OnlineMeetClassroomProps> = ({
             topicTitle: currentSession.title,
           }),
         });
-        if (!res.ok) throw new Error('Could not save prayer request');
-        const created = await res.json();
+        const created: PrayerRequestItem =
+          result.ok && result.data
+            ? result.data
+            : {
+                id: `prayer-local-${Date.now().toString(36)}`,
+                authorUid: 'partner-guest',
+                authorName,
+                message: text,
+                topicTitle: currentSession.title,
+                amenCount: 0,
+                createdAt: new Date().toISOString(),
+              };
         setPrayerRequests((prev) => [created, ...prev]);
       }
       setPrayerInput('');
@@ -317,11 +325,10 @@ export const OnlineMeetClassroom: React.FC<OnlineMeetClassroomProps> = ({
       if (auth.currentUser) {
         await incrementPrayerAmen(id);
       } else {
-        const res = await fetch(`/api/prayer-requests/${id}/amen`, { method: 'POST' });
-        if (res.ok) {
-          const updated = await res.json();
-          setPrayerRequests((prev) => prev.map((p) => (p.id === id ? updated : p)));
-        }
+        setPrayerRequests((prev) =>
+          prev.map((p) => (p.id === id ? { ...p, amenCount: (p.amenCount || 0) + 1 } : p))
+        );
+        await safeFetchJson(`/api/prayer-requests/${id}/amen`, { method: 'POST' });
       }
     } catch {
       // Ignore errors

@@ -1,7 +1,6 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import { GoogleGenAI, Type } from "@google/genai";
 
@@ -13,8 +12,9 @@ const PORT = 3000;
 export const JESUS_NEVER_FAILS_CHANNEL_URL = "https://www.youtube.com/@jesusneverfails7649";
 const YOUTUBE_CHANNEL_ID = "UCDAokHRiN1rvC1QHVRdUkgQ";
 const YOUTUBE_RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
-const STORE_PATH = path.join(process.cwd(), ".gospel-partner-store.json");
-const BIBLE_CACHE_PATH = path.join(process.cwd(), ".bible-lang-cache.json");
+const DATA_DIR = process.env.VERCEL ? "/tmp" : process.cwd();
+const STORE_PATH = path.join(DATA_DIR, ".gospel-partner-store.json");
+const BIBLE_CACHE_PATH = path.join(DATA_DIR, ".bible-lang-cache.json");
 
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
@@ -1360,7 +1360,8 @@ Answer questions clearly from the Holy Bible with grace, compassion, accurate ve
 });
 
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -1368,10 +1369,13 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
+    if (fs.existsSync(distPath)) {
+      app.use(express.static(distPath));
+      app.get("*", (req, res, next) => {
+        if (req.path.startsWith("/api/")) return next();
+        res.sendFile(path.join(distPath, "index.html"));
+      });
+    }
   }
 
   app.listen(PORT, "0.0.0.0", () => {
@@ -1379,4 +1383,8 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
