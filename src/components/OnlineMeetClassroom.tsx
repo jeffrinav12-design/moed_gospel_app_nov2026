@@ -31,6 +31,7 @@ import {
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { fetchGmailClassEmails, GmailMessageSummary } from '../services/googleAuth';
 import { safeFetchJson } from '../services/apiClient';
+import { gospelCrossSunriseImg } from '../assets/media';
 import {
   auth,
   subscribePrayerRequests,
@@ -411,7 +412,7 @@ export const OnlineMeetClassroom: React.FC<OnlineMeetClassroomProps> = ({
             {/* Tile 1: Active Study Focus & Live Anchor Verse */}
             <div className="relative rounded-2xl overflow-hidden bg-stone-900 border border-stone-800 flex flex-col justify-between min-h-[250px]">
               <img
-                src="/src/assets/images/gospel_cross_sunrise_1795279533352.jpg"
+                src={gospelCrossSunriseImg}
                 alt="Cross at sunrise for Gospel Fellowship"
                 referrerPolicy="no-referrer"
                 className="absolute inset-0 w-full h-full object-cover opacity-55"

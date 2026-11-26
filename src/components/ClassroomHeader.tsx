@@ -3,6 +3,7 @@ import { Youtube, ExternalLink, Video, Check, Copy, LogOut, Menu } from 'lucide-
 import { GospelSession, FellowshipGroup, UserProfile } from '../types';
 import { JESUS_NEVER_FAILS_CHANNEL_URL } from '../data/gospelData';
 import { GoogleSignInButton } from './GoogleSignInButton';
+import { moedGospelLogoImg } from '../assets/media';
 
 interface ClassroomHeaderProps {
   currentSession: GospelSession;
@@ -72,7 +73,7 @@ export const ClassroomHeader: React.FC<ClassroomHeaderProps> = ({
             title="Return to MOED Welcome Page"
           >
             <img
-              src="/src/assets/images/moed_gospel_logo_1795614382954.jpg"
+              src={moedGospelLogoImg}
               alt="MOED Emblem"
               className="w-9 h-9 rounded-lg object-cover border border-amber-200 shrink-0 hidden xs:block sm:block"
             />

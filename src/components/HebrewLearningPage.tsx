@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Volume2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { HebrewGreekLetter } from '../types';
 import { HEBREW_ALPHABET } from '../data/languagesAndHistoryData';
+import { hebrewScrollHeritageImg } from '../assets/media';
 
 interface HebrewLearningPageProps {
   onOpenBibleReader?: () => void;
@@ -82,7 +83,7 @@ export const HebrewLearningPage: React.FC<HebrewLearningPageProps> = ({
 
         <div className="lg:col-span-5 relative min-h-[210px] bg-stone-900">
           <img
-            src="/src/assets/images/hebrew_scroll_heritage_1795368174259.jpg"
+            src={hebrewScrollHeritageImg}
             alt="Ancient parchment Torah scroll lit warmly"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"

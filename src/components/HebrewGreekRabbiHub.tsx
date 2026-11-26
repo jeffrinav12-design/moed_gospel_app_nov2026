@@ -17,6 +17,7 @@ import {
   RABBI_HISTORY_LESSONS,
 } from '../data/languagesAndHistoryData';
 import { safeFetchJson } from '../services/apiClient';
+import { hebrewScrollHeritageImg } from '../assets/media';
 
 type HubMode = 'hebrew' | 'greek' | 'rabbi';
 
@@ -134,7 +135,7 @@ export const HebrewGreekRabbiHub: React.FC = () => {
 
         <div className="lg:col-span-5 relative min-h-[200px] bg-stone-900">
           <img
-            src="/src/assets/images/hebrew_scroll_heritage_1795368174259.jpg"
+            src={hebrewScrollHeritageImg}
             alt="Ancient parchment Torah scroll lit warmly"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"

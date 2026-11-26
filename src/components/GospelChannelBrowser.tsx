@@ -23,6 +23,7 @@ import {
   Eye,
   X,
 } from 'lucide-react';
+import { gospelHeroSanctuaryImg } from '../assets/media';
 
 interface GospelChannelBrowserProps {
   sessions: GospelSession[];
@@ -108,7 +109,7 @@ export const GospelChannelBrowser: React.FC<GospelChannelBrowserProps> = ({
 
           <div className="lg:col-span-5 relative min-h-[220px] bg-stone-900">
             <img
-              src="/src/assets/images/gospel_hero_sanctuary_1795279534207.jpg"
+              src={gospelHeroSanctuaryImg}
               alt="Open Holy Bible in morning sanctuary light"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"

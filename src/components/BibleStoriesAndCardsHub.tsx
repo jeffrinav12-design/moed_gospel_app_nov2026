@@ -28,6 +28,7 @@ import {
 } from '../data/languagesAndHistoryData';
 import { DEFAULT_BIBLICAL_CARDS } from '../data/ministryLinks';
 import { safeFetchJson } from '../services/apiClient';
+import { biblicalStoriesOliveImg } from '../assets/media';
 
 type StoriesCardsMode = 'stories' | 'cards' | 'editor';
 
@@ -306,7 +307,7 @@ export const BibleStoriesAndCardsHub: React.FC<BibleStoriesAndCardsHubProps> = (
 
         <div className="lg:col-span-5 relative min-h-[200px] bg-stone-900">
           <img
-            src="/src/assets/images/biblical_stories_olive_1795368174277.jpg"
+            src={biblicalStoriesOliveImg}
             alt="Olive trees overlooking ancient Jerusalem foothills at sunrise"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"

@@ -18,6 +18,7 @@ import {
   registerPartnerWithEmail,
 } from '../services/googleAuth';
 import { HamburgerMenuDrawer } from './HamburgerMenuDrawer';
+import { moedGospelLogoImg } from '../assets/media';
 
 interface WelcomeHeroProps {
   onGetStarted: (
@@ -217,7 +218,7 @@ export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onGetStarted }) => {
 
             <div className="flex items-center gap-2.5 min-w-0">
               <img
-                src="/src/assets/images/moed_gospel_logo_1795614382954.jpg"
+                src={moedGospelLogoImg}
                 alt="MOED Gospel Sanctuary Logo"
                 className="w-10 h-10 rounded-xl object-cover border border-amber-200 shrink-0"
               />
@@ -252,7 +253,7 @@ export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onGetStarted }) => {
           <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
             <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden border-2 border-amber-200 bg-white shadow-sm">
               <img
-                src="/src/assets/images/moed_gospel_logo_1795614382954.jpg"
+                src={moedGospelLogoImg}
                 alt="MOED Gospel Crest"
                 className="w-full h-full object-cover"
               />

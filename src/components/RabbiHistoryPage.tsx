@@ -11,6 +11,7 @@ import {
 import { RabbiHistoryLesson } from '../types';
 import { RABBI_HISTORY_LESSONS } from '../data/languagesAndHistoryData';
 import { safeFetchJson } from '../services/apiClient';
+import { biblicalStoriesOliveImg } from '../assets/media';
 
 interface RabbiHistoryPageProps {
   onOpenBibleReader?: () => void;
@@ -111,7 +112,7 @@ export const RabbiHistoryPage: React.FC<RabbiHistoryPageProps> = ({
 
         <div className="lg:col-span-5 relative min-h-[210px] bg-stone-900">
           <img
-            src="/src/assets/images/biblical_stories_olive_1795368174277.jpg"
+            src={biblicalStoriesOliveImg}
             alt="Olive trees overlooking Jerusalem foothills"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"

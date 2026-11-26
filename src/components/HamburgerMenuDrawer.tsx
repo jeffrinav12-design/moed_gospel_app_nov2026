@@ -27,6 +27,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { UserProfile } from '../types';
+import { moedGospelLogoImg } from '../assets/media';
 
 export interface DrawerMenuItem {
   id: string;
@@ -278,7 +279,7 @@ export const HamburgerMenuDrawer: React.FC<HamburgerMenuDrawerProps> = ({
         <div className="bg-white border-b border-stone-200 px-5 py-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <img
-              src="/src/assets/images/moed_gospel_logo_1795614382954.jpg"
+              src={moedGospelLogoImg}
               alt="MOED Gospel Sanctuary Emblem"
               className="w-10 h-10 rounded-xl object-cover border border-amber-200 shrink-0"
             />

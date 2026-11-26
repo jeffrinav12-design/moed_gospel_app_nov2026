@@ -1,4 +1,10 @@
 import { SongReleaseItem, SocialConnectLink, CustomBiblicalCard } from '../types';
+import {
+  worshipReleaseCoverImg,
+  starmakerMicSanctuaryImg,
+  gospelCrossSunriseImg,
+  gospelHeroSanctuaryImg,
+} from '../assets/media';
 
 export const JESUS_NEVER_FAILS_HANDLE = '@jesus_never_fails_124';
 export const JESUS_NEVER_FAILS_YT_HANDLE = '@jesusneverfails7649';
@@ -87,7 +93,7 @@ export const NEW_SONG_RELEASES: SongReleaseItem[] = [
     starmakerUrl:
       'https://m.starmakerstudios.com/d/profileinfo?app_name=sm&cardKey=Profile&color=FE3A6A&from_sid=62140490794&is_convert=true&new=true&pid=Profire_share_B&shareTime=1640745612&share_type=copyLink&showBar=1&showNavigation=true&type=sing&userId=62140490794',
     channelVideoQueryUrl: 'https://www.youtube.com/@jesusneverfails7649/search?query=song+worship',
-    coverImage: '/src/assets/images/worship_release_cover_1795368172600.jpg',
+    coverImage: worshipReleaseCoverImg,
   },
   {
     id: 'release-2',
@@ -102,7 +108,7 @@ export const NEW_SONG_RELEASES: SongReleaseItem[] = [
     starmakerUrl:
       'https://m.starmakerstudios.com/d/profileinfo?app_name=sm&cardKey=Profile&color=FE3A6A&from_sid=62140490794&is_convert=true&new=true&pid=Profire_share_B&shareTime=1640745612&share_type=copyLink&showBar=1&showNavigation=true&type=sing&userId=62140490794',
     channelVideoQueryUrl: 'https://www.youtube.com/@jesusneverfails7649/search?query=Psalm+91',
-    coverImage: '/src/assets/images/starmaker_mic_sanctuary_1795368174212.jpg',
+    coverImage: starmakerMicSanctuaryImg,
   },
   {
     id: 'release-3',
@@ -117,7 +123,7 @@ export const NEW_SONG_RELEASES: SongReleaseItem[] = [
     starmakerUrl:
       'https://m.starmakerstudios.com/d/profileinfo?app_name=sm&cardKey=Profile&color=FE3A6A&from_sid=62140490794&is_convert=true&new=true&pid=Profire_share_B&shareTime=1640745612&share_type=copyLink&showBar=1&showNavigation=true&type=sing&userId=62140490794',
     channelVideoQueryUrl: 'https://www.youtube.com/@jesusneverfails7649/search?query=Jesus+Love',
-    coverImage: '/src/assets/images/gospel_cross_sunrise_1795279533352.jpg',
+    coverImage: gospelCrossSunriseImg,
   },
   {
     id: 'release-4',
@@ -132,7 +138,7 @@ export const NEW_SONG_RELEASES: SongReleaseItem[] = [
     starmakerUrl:
       'https://m.starmakerstudios.com/d/profileinfo?app_name=sm&cardKey=Profile&color=FE3A6A&from_sid=62140490794&is_convert=true&new=true&pid=Profire_share_B&shareTime=1640745612&share_type=copyLink&showBar=1&showNavigation=true&type=sing&userId=62140490794',
     channelVideoQueryUrl: 'https://www.youtube.com/@jesusneverfails7649/search?query=Jesus+Never+Fails',
-    coverImage: '/src/assets/images/gospel_hero_sanctuary_1795279534207.jpg',
+    coverImage: gospelHeroSanctuaryImg,
   },
 ];
 
