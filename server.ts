@@ -166,12 +166,12 @@ async function fetchLiveYouTubeChannelVideos(forceRefresh = false) {
 }
 
 function getGeminiClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    console.warn("GEMINI_API_KEY not configured.");
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
+    throw new Error("GEMINI_API_KEY is not configured in Secrets / Environment Variables.");
   }
   return new GoogleGenAI({
-    apiKey: apiKey || "dummy_key",
+    apiKey,
     httpOptions: {
       headers: {
         "User-Agent": "aistudio-build",
