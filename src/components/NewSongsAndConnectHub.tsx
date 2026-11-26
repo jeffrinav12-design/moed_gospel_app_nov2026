@@ -17,6 +17,7 @@ import {
   Save,
   Loader2,
   X,
+  Cloud,
 } from 'lucide-react';
 import {
   BookReleaseItem,
@@ -722,7 +723,9 @@ export const NewSongsAndConnectHub: React.FC<NewSongsAndConnectHubProps> = ({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-lg bg-white border border-stone-200 flex items-center justify-center shrink-0 text-stone-800">
-                      {link.platform === 'GitHub' ? (
+                      {link.platform === 'Rafoan Cloud' ? (
+                        <Cloud className="w-4 h-4 text-amber-800" />
+                      ) : link.platform === 'GitHub' ? (
                         <Code2 className="w-4 h-4" />
                       ) : link.platform === 'Portfolio' ? (
                         <Globe className="w-4 h-4" />

@@ -27,6 +27,7 @@ import {
   JESUS_NEVER_FAILS_HANDLE,
   MINISTRY_SOCIAL_LINKS,
   JEFFRINA_PROFESSION_LINKS,
+  RAFOAN_CLOUD_URL,
 } from './data/ministryLinks';
 import { WelcomeHero } from './components/WelcomeHero';
 import { ClassroomHeader } from './components/ClassroomHeader';
@@ -1120,37 +1121,56 @@ export default function App() {
 
       {/* Editorial Footer */}
       <footer className="print:hidden border-t border-stone-200 bg-white py-5 px-4 sm:px-6 text-xs text-stone-500">
-        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-center md:text-left">
-            <span className="font-bold text-stone-900 font-editorial">MOED · Jesus Never Fail Ministries</span>
-            <span aria-hidden="true"> · </span>
-            <span className="font-semibold text-rose-700">{JESUS_NEVER_FAILS_HANDLE}</span>
+        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto space-y-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left">
+              <span className="font-bold text-stone-900 font-editorial">
+                MOED · Jesus Never Fail Ministries
+              </span>
+              <span aria-hidden="true"> · </span>
+              <span className="font-semibold text-rose-700">{JESUS_NEVER_FAILS_HANDLE}</span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {MINISTRY_SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-stone-600 hover:text-rose-700 font-medium transition-colors"
+                >
+                  {s.platform}
+                </a>
+              ))}
+              <span className="text-stone-300">|</span>
+              {JEFFRINA_PROFESSION_LINKS.map((p) => (
+                <a
+                  key={p.id}
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-stone-600 hover:text-stone-950 font-semibold transition-colors"
+                >
+                  {p.platform === 'Rafoan Cloud' ? 'Rafoan Cloud' : `Jeffrina · ${p.platform}`}
+                </a>
+              ))}
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {MINISTRY_SOCIAL_LINKS.map((s) => (
+          <div className="pt-3 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-stone-500 text-center">
+            <span>© {new Date().getFullYear()} MOED · Jesus Never Fail Ministries</span>
+            <span className="uppercase tracking-wider font-semibold text-stone-700">
+              ALL RIGHTS RESERVED · POWERED BY{' '}
               <a
-                key={s.id}
-                href={s.url}
+                href={RAFOAN_CLOUD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-stone-600 hover:text-rose-700 font-medium transition-colors"
+                className="text-rose-700 hover:text-rose-800 underline underline-offset-2 font-bold"
               >
-                {s.platform}
+                RAFOAN CLOUD
               </a>
-            ))}
-            <span className="text-stone-300">|</span>
-            {JEFFRINA_PROFESSION_LINKS.map((p) => (
-              <a
-                key={p.id}
-                href={p.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-stone-600 hover:text-stone-950 font-semibold transition-colors"
-              >
-                Jeffrina · {p.platform}
-              </a>
-            ))}
+            </span>
           </div>
         </div>
       </footer>

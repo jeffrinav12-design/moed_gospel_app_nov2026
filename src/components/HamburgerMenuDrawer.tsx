@@ -117,7 +117,7 @@ export const MOED_HAMBURGER_GROUPS: DrawerMenuGroup[] = [
       {
         id: 'socials-connect',
         label: 'Socials & Connect with Jeffrina',
-        subtitle: 'YouTube, Blogger, Instagram, Facebook & Portfolio',
+        subtitle: 'YouTube, Blogger, Instagram, Rafoan Cloud & Portfolio',
         icon: Share2,
       },
     ],

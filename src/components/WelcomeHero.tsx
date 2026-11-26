@@ -19,6 +19,7 @@ import {
 } from '../services/googleAuth';
 import { HamburgerMenuDrawer } from './HamburgerMenuDrawer';
 import { moedGospelLogoImg } from '../assets/media';
+import { RAFOAN_CLOUD_URL } from '../data/ministryLinks';
 
 interface WelcomeHeroProps {
   onGetStarted: (
@@ -576,6 +577,25 @@ export const WelcomeHero: React.FC<WelcomeHeroProps> = ({ onGetStarted }) => {
           </div>
         </div>
       </main>
+
+      <footer className="border-t border-stone-200 bg-white py-3.5 px-4 sm:px-6 text-[11px] text-stone-500">
+        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center">
+          <span className="font-semibold text-stone-700 font-editorial">
+            © {new Date().getFullYear()} MOED · Jesus Never Fail Ministries
+          </span>
+          <span className="tracking-wider uppercase font-semibold text-stone-600">
+            ALL RIGHTS RESERVED · POWERED BY{' '}
+            <a
+              href={RAFOAN_CLOUD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-rose-700 hover:text-rose-800 underline underline-offset-2 font-bold"
+            >
+              RAFOAN CLOUD
+            </a>
+          </span>
+        </div>
+      </footer>
     </div>
   );
 };

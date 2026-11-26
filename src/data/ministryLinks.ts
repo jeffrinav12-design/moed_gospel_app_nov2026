@@ -8,6 +8,8 @@ import {
 
 export const JESUS_NEVER_FAILS_HANDLE = '@jesus_never_fails_124';
 export const JESUS_NEVER_FAILS_YT_HANDLE = '@jesusneverfails7649';
+export const RAFOAN_CLOUD_URL =
+  'https://hakgrosuzhavanprojectfarmersnov2026-xmxy2zubbslwqjlj49o73b.streamlit.app/';
 
 export const MINISTRY_SOCIAL_LINKS: SocialConnectLink[] = [
   {
@@ -53,6 +55,14 @@ export const MINISTRY_SOCIAL_LINKS: SocialConnectLink[] = [
 ];
 
 export const JEFFRINA_PROFESSION_LINKS: SocialConnectLink[] = [
+  {
+    id: 'prof-rafoan-cloud',
+    label: 'Rafoan Cloud · Streamlit Platform',
+    platform: 'Rafoan Cloud',
+    handleOrNote: 'Launch Rafoan Cloud Streamlit App',
+    url: RAFOAN_CLOUD_URL,
+    group: 'profession',
+  },
   {
     id: 'prof-linkedin',
     label: 'Connect on LinkedIn',
